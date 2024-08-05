@@ -1,32 +1,49 @@
-let currentNode = 1;
-      const prev = document.getElementById("prev");
-      const next = document.getElementById("next");
+const progress = document.getElementById('progress');
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
+const circles = document.querySelectorAll('.circle');
 
-      function navigate(direction) {
-        const currentElement = document.getElementById(currentNode);
-        if (direction === "next" && currentElement.nextElementSibling) {
-          let nextConnection = currentElement.nextElementSibling;
-          nextConnection.classList.add("active");
-          let nextNode = currentElement.nextElementSibling.nextElementSibling;
-          nextNode.classList.add("active");
+let currentActive = 1;
 
-          currentNode++;
-        } else if (
-          direction === "prev" &&
-          currentElement.previousElementSibling
-        ) {
-          currentElement.classList.remove("active");
-          currentElement.previousElementSibling.classList.remove("active");
-          currentNode--;
+next.addEventListener('click', () => {
+    currentActive++;
+    
+    if (currentActive > circles.length) {
+        currentActive = circles.length;
+    }
+    
+    update();
+});
+
+prev.addEventListener('click', () => {
+    currentActive--;
+    
+    if (currentActive < 1) {
+        currentActive = 1;
+    }
+    
+    update();
+});
+
+function update() {
+    circles.forEach((circle, idx) => {
+        if (idx < currentActive) {
+            circle.classList.add('active');
+        } else {
+            circle.classList.remove('active');
         }
-        currentNode === 5 ? (next.disabled = true) : (next.disabled = false);
-        currentNode === 1 ? (prev.disabled = true) : (prev.disabled = false);
-      }
-
-      next.addEventListener("click", () => {
-        navigate("next");
-      });
-
-      prev.addEventListener("click", () => {
-        navigate("prev");
-      });
+    });
+    
+    const actives = document.querySelectorAll('.active');
+    
+    progress.style.width = ((actives.length - 1) / (circles.length - 1)) * 100 + '%';
+    
+    if (currentActive === 1) {
+        prev.disabled = true;
+    } else if (currentActive === circles.length) {
+        next.disabled = true;
+    } else {
+        prev.disabled = false;
+        next.disabled = false;
+    }
+}
